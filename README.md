@@ -185,8 +185,8 @@ This forces conscious decision-making and prevents data pollution.
 * **Real-Time State Synchronization**
   Managing unread notification counts across multiple components (Navbar, Issue Detail, Dashboard) required careful Firestore listener cleanup to prevent memory leaks and inconsistent UI state.
 
-* **Visual Performance Optimization**
-  Heavy use of `backdrop-filter`, gradients, and glow effects required GPU-aware CSS tuning to avoid FPS drops on mid-tier hardware.
+* **Roles Allotment**
+  Deciding which role should be given to whom it was a bit tough.
 
 ---
 
