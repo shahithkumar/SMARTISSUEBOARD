@@ -82,7 +82,49 @@ The system enforces a strict security model to protect data integrity:
 
 ---
 
-## 🏁 Deployment Ready
+## �️ Technical Architecture & Rationale
+
+### 1. Why this Frontend Stack?
+- **React 18**: Chosen for its robust component-based architecture, allowing us to build a reusable design system (Glass Panels, Active Stats) for the complex Cyber-Premium UI.
+- **Vite**: Used as the build tool for its lightning-fast Hot Module Replacement (HMR) and optimized production bundling, crucial for maintaining high developer velocity.
+- **Recharts**: Selected for system analytics because of its seamless integration with React and its ability to render high-performance SVG charts that match our neon aesthetic.
+- **Vanilla CSS3**: Instead of a utility-first framework like Tailwind, we used pure CSS to have granular control over complex gradients, glassmorphism filters (`backdrop-filter`), and cinematic shadows.
+
+### 2. Firestore Data Structure
+The application uses a flat collection structure with targeted sub-collections for high-frequency data:
+- **`concepts/issues`**:
+  - `title`, `description`, `priority`, `status`: Core issue metadata.
+  - `assignedTo`, `createdBy`: Email-based pointers for assignment logic.
+  - `history`: An array of objects `[{ action, actor, timestamp }]` for immutable auditing.
+  - `version`: An integer for basic concurrency control.
+- **`concepts/users`**:
+  - `email`, `displayName`, `role`: User identity and RBAC clearance.
+  - **Sub-collection: `notifications`**: Stores real-time alerts `(message, issueId, readStatus)` specifically for that user.
+
+---
+
+## 🔍 Intelligent Duplicate Handling
+The system uses a **Pre-emptive Search Logic** in the `CreateIssue` module:
+1. When a title is entered, the `checkForSimilarIssues` function normalized the string and scans existing titles and descriptions.
+2. If a match is found (even partial), the UI dynamically renders a **Historical Match Found** (if resolved) or **Active Duplicate Detected** warning.
+3. The user is then forced to consciously "Abort" or "Override," preventing the database from becoming cluttered with redundant data.
+
+---
+
+## 🧠 Project Reflections
+
+### What was confusing or challenging?
+- **Real-Time State Sync**: Coordinating the notification unread count with the underlying database state across separate components (Navbar vs. IssueDetail) required careful `onSnapshot` listener management to avoid memory leaks.
+- **Visual Performance**: Implementing multiple `backdrop-filter` effects and high-res gradients required careful CSS optimization to ensure the "Cyber-Premium" look didn't degrade the frame rate on lower-end devices.
+
+### What would I improve next?
+- **Vector Search**: Current duplicate detection uses string containment. I would implement **AI-powered vector embeddings** to detect issues that are conceptually similar even if the wording is different.
+- **File Attachments**: Integrating Firebase Storage to allow users to upload "System Evidence" (screenshots/logs) directly to an issue.
+- **Team Leaderboards**: Adding a gamified element to the Analytics portal to track "Fastest Resolver" and "System Experts."
+
+---
+
+## �🏁 Deployment Ready
 
 The project is fully optimized for production deployment on **Vercel**, **Netlify**, or **Firebase Hosting**. 
 1.  Connect your GitHub repository to your host.
